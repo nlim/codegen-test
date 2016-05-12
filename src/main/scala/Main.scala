@@ -17,21 +17,30 @@ object Main {
   val db = Database.forURL(url, driver = jdbcDriver)
   val q  = Artists
 
-  val insertAction = DBIO.seq(
-    Artists += ArtistsRow(0, "Alice2")
-  )
+  val alice2Name = "Alice2"
 
-  def runInsert: Future[Unit] = {
-    db.run(insertAction)
+  val insertSingle = (Artists returning Artists.map(_.id)) += ArtistsRow(0, alice2Name)
+
+  val deleteAllAlice2s = Artists.filter(_.name === alice2Name).delete
+
+  def runInsert: Future[Int] = {
+    db.run(insertSingle)
   }
 
   def queryAll: Future[Seq[ArtistsRow]]  = {
     db.run(q.result)
   }
 
+  def runDelete: Future[Int] = {
+    db.run(deleteAllAlice2s)
+  }
+
   def main(args: Array[String]): Unit = {
     val f = for {
-      _ <- runInsert
+      d <- runDelete
+      _: Unit = println(s"Deleted: $d")
+      i <- runInsert
+      _: Unit = println(s"Inserted and got id: $i")
       v <- queryAll
     } yield v
 

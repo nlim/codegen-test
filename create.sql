@@ -1,0 +1,23 @@
+DROP TABLE IF EXISTS bands CASCADE;
+
+CREATE TABLE bands (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(500) NOT NULL,
+  started TIMESTAMP
+);
+
+DROP TABLE IF EXISTS artists CASCADE;
+
+CREATE TABLE artists (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(500) NOT NULL
+);
+
+DROP TABLE IF EXISTS bands_artists CASCADE;
+
+CREATE TABLE bands_artists (
+  band_id INTEGER NOT NULL REFERENCES bands,
+  artist_id INTEGER NOT NULL REFERENCES artists,
+  PRIMARY KEY(band_id, artist_id)
+);
+
